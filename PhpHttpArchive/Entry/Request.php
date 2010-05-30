@@ -34,26 +34,30 @@
 class PhpHttpArchive_Entry_Request extends PhpHttpArchive_Element_Abstract
 {
     protected $_cookies = array();
+    protected $_headers = array();
     protected $_httpVersion;
     protected $_method;
+    protected $_queryString;
     protected $_url;
 
     protected function _loadData(array $data)
     {
         $this->setCookies($data['cookies']);
+        $this->setHeaders($data['headers']);
         $this->setHttpVersion($data['httpVersion']);
         $this->setMethod($data['method']);
+        $this->setQueryString($data['queryString']);
         $this->setUrl($data['url']);
-    }
-
-    protected function _validateData(array $data)
-    {
-
     }
 
     public function getCookies()
     {
         return $this->_cookies;
+    }
+
+    public function getHeaders()
+    {
+        return $this->_headers;
     }
 
     public function getHttpVersion()
@@ -74,6 +78,12 @@ class PhpHttpArchive_Entry_Request extends PhpHttpArchive_Element_Abstract
     public function setCookies(array $cookies)
     {
         $this->_cookies = $cookies;
+        return $this;
+    }
+
+    public function setHeaders(array $headers)
+    {
+        $this->_headers = $headers;
         return $this;
     }
 

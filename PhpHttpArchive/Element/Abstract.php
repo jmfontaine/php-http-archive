@@ -33,22 +33,13 @@
 
 abstract class PhpHttpArchive_Element_Abstract
 {
-    protected $_data;
-
     abstract protected function _loadData(array $data);
-    abstract protected function _validateData(array $data);
 
-    public function __construct(array $data)
+    public function __construct($data = null)
     {
-        $this->setData($data);
-    }
-
-    public function setData(array $data)
-    {
-        $this->_validateData($data);
-        $this->_loadData($data);
-        $this->_data = $data;
-        return $this;
+        if (null !== $data) {
+            $this->_loadData($data);
+        }
     }
 
     public function toArray()

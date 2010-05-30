@@ -31,58 +31,24 @@
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
-class PhpHttpArchive_Entries extends PhpHttpArchive_Element_Abstract
-    implements Iterator
+class PhpHttpArchive_Entry_Request_QueryString
+    extends PhpHttpArchive_Element_Abstract
 {
-    protected $_entries = array();
-    protected $_index = 0;
+    protected $_params = array();
 
     protected function _loadData(array $data)
     {
-        foreach ($data as $entry) {
-            $this->addEntry(
-                new PhpHttpArchive_Entry($entry)
-            );
-        }
+        $this->setParams($data);
     }
 
-    public function addEntry(PhpHttpArchive_Entry $entry)
+    public function getParams()
     {
-        $this->_entries[] = $entry;
-        usort($this->_entries, array($this, 'compareEntriesOnStartedDateTime'));
+        return $this->_params;
+    }
+
+    public function setParams(array $params)
+    {
+        $this->_params = $params;
         return $this;
-    }
-
-    public function compareEntriesOnStartedDateTime($firstEntry, $secondEntry)
-    {
-        return strcmp(
-            $firstEntry->getStartedDateTime(),
-            $secondEntry->getStartedDateTime()
-        );
-    }
-
-    public function current()
-    {
-        return $this->_entries[$this->_index];
-    }
-
-    public function key()
-    {
-        return $this->_index;
-    }
-
-    public function next()
-    {
-        $this->_index++;
-    }
-
-    public function rewind()
-    {
-        $this->_index = 0;
-    }
-
-    public function valid()
-    {
-        return isset($this->_entries[$this->_index]);
     }
 }

@@ -35,50 +35,78 @@ class PhpHttpArchive
 {
     protected $_browser;
     protected $_creator;
-    protected $_data;
     protected $_entries;
     protected $_pages;
     protected $_version = '1.1';
 
-    protected function _parseData($data)
+    protected function _loadData(array $data)
     {
         $data = $data['log'];
 
-        $this->setVersion($data['version']);
+        if (!empty($data['version'])) {
+            $this->setVersion($data['version']);
+        }
 
-        $this->_browser = new PhpHttpArchive_Browser($data['browser']);
+        if (!empty($data['browser'])) {
+            $this->_browser = new PhpHttpArchive_Browser($data['browser']);
+        }
+
+        if (empty($data['creator'])) {
+            throw new InvalidArgumentException('Missing "creator" data');
+        }
         $this->_creator = new PhpHttpArchive_Creator($data['creator']);
+
+        if (empty($data['entries'])) {
+            throw new InvalidArgumentException('Missing "entries" data');
+        }
         $this->_entries = new PhpHttpArchive_Entries($data['entries']);
-        $this->_pages   = new PhpHttpArchive_Pages($data['pages']);
+
+        if (!empty($data['pages'])) {
+            $this->_pages = new PhpHttpArchive_Pages($data['pages']);
+        }
     }
 
-    public function __construct($data)
+    public function __construct($data = null)
     {
-        $this->setData($data);
+        if (null !== $data) {
+            $this->_loadData($data);
+        }
+    }
+
+    public static function create()
+    {
+        return new self();
     }
 
     public function getBrowser()
     {
-        return $this->_creator;
+        if (null === $this->_browser) {
+            $this->_browser = new PhpHttpArchive_Browser();
+        }
+        return $this->_browser;
     }
 
     public function getCreator()
     {
+        if (null === $this->_creator) {
+            $this->_creator = new PhpHttpArchive_Creator();
+        }
         return $this->_creator;
-    }
-
-    public function getData()
-    {
-        return $this->_data;
     }
 
     public function getEntries()
     {
+        if (null === $this->_entries) {
+            $this->_entries = new PhpHttpArchive_Entries();
+        }
         return $this->_entries;
     }
 
     public function getPages()
     {
+        if (null === $this->_pages) {
+            $this->_pages = new PhpHttpArchive_Pages();
+        }
         return $this->_pages;
     }
 
@@ -90,6 +118,11 @@ class PhpHttpArchive
     public static function loadFromJson($data)
     {
         $data = json_decode($data, true);
+        if (null === $data) {
+            throw new InvalidArgumentException(
+                'Provided date could not be parsed as valid JSON'
+            );
+        }
         return new self($data);
     }
 
@@ -101,25 +134,45 @@ class PhpHttpArchive
     public function loadFromFile($path)
     {
         $data = @file_get_contents($path);
-
         if (false === $data) {
             throw new InvalidArgumentException(
                 "HTTP archive is not readable ($path)"
             );
         }
-
         return self::loadFromJson($data);
     }
 
-    public function setData($data)
+    public function setBrowser(PhpHttpArchive_Browser $browser)
     {
-        $this->_data = $data;
-        $this->_parseData($data);
+        $this->_browser = $browser;
+        return $this;
+    }
+
+    public function setCreator(PhpHttpArchive_Creator $creator)
+    {
+        $this->_creator = $creator;
+        return $this;
+    }
+
+    public function setEntries(PhpHttpArchive_Entries $entries)
+    {
+        $this->_entries = $entries;
+        return $this;
+    }
+
+    public function setPages(PhpHttpArchive_Pages $pages)
+    {
+        $this->_pages = $pages;
         return $this;
     }
 
     public function setVersion($version)
     {
+        // We only support version 1.1 of the HTTP Archive specification for now
+        if ('1.1' != $version) {
+            throw new InvalidArgumentException("This library does not support
+                this version ($version) of the HTTP Archive specification");
+        }
         $this->_version = (string) $version;
         return $this;
     }

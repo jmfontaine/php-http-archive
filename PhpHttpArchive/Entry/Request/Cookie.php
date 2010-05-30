@@ -31,58 +31,94 @@
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
-class PhpHttpArchive_Entries extends PhpHttpArchive_Element_Abstract
-    implements Iterator
+class PhpHttpArchive_Entry_Request_Cookie
+    extends PhpHttpArchive_Element_Abstract
 {
-    protected $_entries = array();
-    protected $_index = 0;
+    protected $_domain;
+    protected $_expires;
+    protected $_name;
+    protected $_path;
+    protected $_value;
 
     protected function _loadData(array $data)
     {
-        foreach ($data as $entry) {
-            $this->addEntry(
-                new PhpHttpArchive_Entry($entry)
-            );
+        if (!empty($data['domain'])) {
+            $this->setDomain($data['domain']);
         }
+
+        if (empty($data['name'])) {
+            throw new InvalidArgumentException('Cookie name is missing');
+        }
+        $this->setName($data['name']);
+
+        if (!empty($data['domain'])) {
+            $this->setPath($data['path']);
+        }
+
+        if (!empty($data['expires'])) {
+            $this->setPath($data['expires']);
+        }
+
+        if (empty($data['value'])) {
+            throw new InvalidArgumentException('Cookie value is missing');
+        }
+        $this->setValue($data['value']);
     }
 
-    public function addEntry(PhpHttpArchive_Entry $entry)
+    public function getDomain()
     {
-        $this->_entries[] = $entry;
-        usort($this->_entries, array($this, 'compareEntriesOnStartedDateTime'));
+        return $this->_domain;
+    }
+
+    public function getExpires($format = null)
+    {
+        if (null === $this->_expires) {
+            $value = null;
+        } else {
+            if (null === $format) {
+                $format = DateTime::ISO8601;
+            }
+            $value = $this->_expires->format($format);
+        }
+
+        return $value;
+    }
+
+    public function getName()
+    {
+        return $this->_name;
+    }
+
+    public function getPath()
+    {
+        return $this->_path;
+    }
+
+    public function getValue()
+    {
+        return $this->_value;
+    }
+
+    public function setDomain($domain)
+    {
+        $this->_domain = (string) $domain;
         return $this;
     }
 
-    public function compareEntriesOnStartedDateTime($firstEntry, $secondEntry)
+    public function setName($name)
     {
-        return strcmp(
-            $firstEntry->getStartedDateTime(),
-            $secondEntry->getStartedDateTime()
-        );
+        $this->_name = (string) $name;
+        return $this;
     }
 
-    public function current()
+    public function setPath($path)
     {
-        return $this->_entries[$this->_index];
+        $this->_path = (string) $path;
+        return $this;
     }
-
-    public function key()
+    public function setValue($value)
     {
-        return $this->_index;
-    }
-
-    public function next()
-    {
-        $this->_index++;
-    }
-
-    public function rewind()
-    {
-        $this->_index = 0;
-    }
-
-    public function valid()
-    {
-        return isset($this->_entries[$this->_index]);
+        $this->_value = (string) $value;
+        return $this;
     }
 }

@@ -42,11 +42,6 @@ class PhpHttpArchive_Pages extends PhpHttpArchive_Element_Abstract
         }
     }
 
-    protected function _validateData(array $data)
-    {
-
-    }
-
     public function addPage($data)
     {
 

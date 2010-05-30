@@ -36,7 +36,7 @@ class PhpHttpArchive_Entry extends PhpHttpArchive_Element_Abstract
     protected $_pageRef;
     protected $_request;
     protected $_startedDateTime;
-    protected $time;
+    protected $_time;
 
     protected function _loadData(array $data)
     {
@@ -46,11 +46,6 @@ class PhpHttpArchive_Entry extends PhpHttpArchive_Element_Abstract
         $this->setTime($data['time']);
     }
 
-    protected function _validateData(array $data)
-    {
-
-    }
-
     public function getPageRef()
     {
         return $this->_pageRef;
@@ -58,15 +53,18 @@ class PhpHttpArchive_Entry extends PhpHttpArchive_Element_Abstract
 
     public function getRequest()
     {
+        if (null === $this->_request) {
+            $this->_request = new PhpHttpArchive_Entry_Request();
+        }
         return $this->_request;
     }
 
     public function getStartedDateTime($format = null)
     {
-        if (null !== $format) {
-            return date($format, $this->_startedDateTime);
+        if (null === $format) {
+            $format = DateTime::ISO8601;
         }
-        return $this->_startedDateTime;
+        return $this->_startedDateTime->format($format);
     }
 
     public function getTime()
@@ -80,15 +78,26 @@ class PhpHttpArchive_Entry extends PhpHttpArchive_Element_Abstract
         return $this;
     }
 
-    public function setRequest($request)
+    public function setRequest(PhpHttpArchive_Entry_Request $request)
     {
-        $this->_request = new PhpHttpArchive_Entry_Request($request);
+        $this->_request = $request;
         return $this;
     }
 
     public function setStartedDateTime($startedDateTime)
     {
-        $this->_startedDateTime = strtotime($startedDateTime);
+        $dateTime = DateTime::createFromFormat(
+            DateTime::ISO8601,
+            $startedDateTime
+        );
+        if (false === $dateTime) {
+            throw new InvalidArgumentException(
+                "Provided \"startedDateTime\" ($startedDateTime) value is not a
+                 valid ISO 8601 value"
+            );
+        }
+
+        $this->_startedDateTime = $dateTime;
         return $this;
     }
 

@@ -31,58 +31,37 @@
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
-class PhpHttpArchive_Entries extends PhpHttpArchive_Element_Abstract
-    implements Iterator
+class PhpHttpArchive_Entry_Request_Param
+    extends PhpHttpArchive_Element_Abstract
 {
-    protected $_entries = array();
-    protected $_index = 0;
+    protected $_name;
+    protected $_value;
 
     protected function _loadData(array $data)
     {
-        foreach ($data as $entry) {
-            $this->addEntry(
-                new PhpHttpArchive_Entry($entry)
-            );
-        }
+        $this->setName($data['name']);
+        $this->setValue($data['value']);
     }
 
-    public function addEntry(PhpHttpArchive_Entry $entry)
+    public function getName()
     {
-        $this->_entries[] = $entry;
-        usort($this->_entries, array($this, 'compareEntriesOnStartedDateTime'));
+        return $this->_name;
+    }
+
+    public function getValue()
+    {
+        return $this->_value;
+    }
+
+    public function setName($name)
+    {
+        $this->_name = (string) $name;
         return $this;
     }
 
-    public function compareEntriesOnStartedDateTime($firstEntry, $secondEntry)
+    public function setValue($value)
     {
-        return strcmp(
-            $firstEntry->getStartedDateTime(),
-            $secondEntry->getStartedDateTime()
-        );
-    }
-
-    public function current()
-    {
-        return $this->_entries[$this->_index];
-    }
-
-    public function key()
-    {
-        return $this->_index;
-    }
-
-    public function next()
-    {
-        $this->_index++;
-    }
-
-    public function rewind()
-    {
-        $this->_index = 0;
-    }
-
-    public function valid()
-    {
-        return isset($this->_entries[$this->_index]);
+        $this->_value = (string) $value;
+        return $this;
     }
 }

@@ -38,13 +38,15 @@ class PhpHttpArchive_Browser extends PhpHttpArchive_Element_Abstract
 
     protected function _loadData(array $data)
     {
+        if (empty($data['name'])) {
+            throw new InvalidArgumentException('Browser name is missing');
+        }
         $this->setName($data['name']);
+
+        if (empty($data['version'])) {
+            throw new InvalidArgumentException('Browser version is missing');
+        }
         $this->setVersion($data['version']);
-    }
-
-    protected function _validateData(array $data)
-    {
-
     }
 
     public function getName()

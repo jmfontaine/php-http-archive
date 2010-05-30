@@ -33,18 +33,20 @@
 
 class PhpHttpArchive_Creator extends PhpHttpArchive_Element_Abstract
 {
-    protected $_name;
-    protected $_version;
+    protected $_name = 'PHP HTTP Archive';
+    protected $_version = '0.1';
 
     protected function _loadData(array $data)
     {
+        if (empty($data['name'])) {
+            throw new InvalidArgumentException('Browser name is missing');
+        }
         $this->setName($data['name']);
+
+        if (empty($data['version'])) {
+            throw new InvalidArgumentException('Browser version is missing');
+        }
         $this->setVersion($data['version']);
-    }
-
-    protected function _validateData(array $data)
-    {
-
     }
 
     public function getName()
