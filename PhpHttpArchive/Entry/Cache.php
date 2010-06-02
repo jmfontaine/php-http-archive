@@ -31,48 +31,42 @@
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
-class PhpHttpArchive_Pages extends PhpHttpArchive_Element_Abstract
-    implements Iterator
+class PhpHttpArchive_Entry_Cache extends PhpHttpArchive_Element_Abstract
 {
-    protected $_pages = array();
+    protected $_afterRequest;
+    protected $_beforeRequest;
 
     protected function _loadData(array $data)
     {
-        foreach ($data as $page) {
-            $this->addPage(
-                new PhpHttpArchive_Page($page)
-            );
-        }
+        $this->setAfterRequest($data['afterRequest']);
+        $this->setBeforeRequest($data['beforeRequest']);
     }
 
-    public function addPage(PhpHttpArchive_Page $page)
+    public function getAfterRequest()
     {
-        $this->_pages[] = $page;
+        if (null === $this->_afterRequest) {
+            $this->_afterRequest = new PhpHttpArchive_Entry_Cache_State();
+        }
+        return $this->_afterRequest;
+    }
+
+    public function getBeforeRequest()
+    {
+        if (null === $this->_beforeRequest) {
+            $this->_beforeRequest = new PhpHttpArchive_Entry_Cache_State();
+        }
+        return $this->_beforeRequest;
+    }
+
+    public function setAfterRequest(PhpHttpArchive_Entry_Cache_State $state)
+    {
+        $this->_afterRequest = $state;
         return $this;
     }
 
-    public function current()
+    public function setBeforeRequest(PhpHttpArchive_Entry_Cache_State $state)
     {
-        return $this->_pages[$this->_index];
-    }
-
-    public function key()
-    {
-        return $this->_index;
-    }
-
-    public function next()
-    {
-        $this->_index++;
-    }
-
-    public function rewind()
-    {
-        $this->_index = 0;
-    }
-
-    public function valid()
-    {
-        return isset($this->_pages[$this->_index]);
+        $this->_beforeRequest = $state;
+        return $this;
     }
 }

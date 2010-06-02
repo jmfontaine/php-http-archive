@@ -31,58 +31,73 @@
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
-class PhpHttpArchive_Entries extends PhpHttpArchive_Element_Abstract
-    implements Iterator
+class PhpHttpArchive_Entry_Request_PostData
+    extends PhpHttpArchive_Element_Abstract
 {
-    protected $_entries = array();
-    protected $_index = 0;
+    protected $_mimeType;
+    protected $_params;
+    protected $_text;
 
     protected function _loadData(array $data)
     {
-        foreach ($data as $entry) {
-            $this->addEntry(
-                new PhpHttpArchive_Entry($entry)
+        if (empty($data['mimeType'])) {
+            throw new InvalidArgumentException(
+                'Post data MIME type is missing'
             );
+        }
+        $this->setName($data['mimeType']);
+
+        if (empty($data['params']) && empty($data['text'])) {
+            throw new InvalidArgumentException(
+                'Post data params or text must be provided'
+            );
+        }
+        if (!empty($data['params']) && !empty($data['text'])) {
+            throw new InvalidArgumentException(
+                'Only post data params or text must be provided, not both'
+            );
+        }
+        if (!empty($data['params'])) {
+            $this->setParams($data['params']);
+        }
+        if (!empty($data['text'])) {
+            $this->setParams($data['text']);
         }
     }
 
-    public function addEntry(PhpHttpArchive_Entry $entry)
+    public function getMimeType()
     {
-        $this->_entries[] = $entry;
-        usort($this->_entries, array($this, 'compareEntriesOnStartedDateTime'));
+        return $this->_mimeType;
+    }
+
+    public function getParams()
+    {
+        if (null === $this->_params) {
+            $this->_params = new PhpHttpArchive_Entry_Request_Params();
+        }
+        return $this->_params;
+    }
+
+    public function getText()
+    {
+        return $this->_text;
+    }
+
+    public function setimeType($mimeType)
+    {
+        $this->_mimeType = (string) $mimeType;
         return $this;
     }
 
-    public function compareEntriesOnStartedDateTime($firstEntry, $secondEntry)
+    public function setParams(PhpHttpArchive_Entry_Request_Params $params)
     {
-        return strcmp(
-            $firstEntry->getStartedDateTime(),
-            $secondEntry->getStartedDateTime()
-        );
+        $this->_params = $params;
+        return $this;
     }
 
-    public function current()
+    public function setText($text)
     {
-        return $this->_entries[$this->_index];
-    }
-
-    public function key()
-    {
-        return $this->_index;
-    }
-
-    public function next()
-    {
-        $this->_index++;
-    }
-
-    public function rewind()
-    {
-        $this->_index = 0;
-    }
-
-    public function valid()
-    {
-        return isset($this->_entries[$this->_index]);
+        $this->_text = (string) $text;
+        return $this;
     }
 }

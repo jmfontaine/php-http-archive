@@ -31,79 +31,127 @@
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
-class PhpHttpArchive_Page extends PhpHttpArchive_Element_Abstract
+class PhpHttpArchive_Entry_Cookie extends PhpHttpArchive_Element_Abstract
 {
-    protected $_id;
-    protected $_pageTimings;
-    protected $_startedDateTime;
-    protected $_title;
+    protected $_domain;
+    protected $_expires;
+    protected $_httpOnly;
+    protected $_name;
+    protected $_path;
+    protected $_value;
 
     protected function _loadData(array $data)
     {
-        $this->setId($data['id']);
-        $this->setPageTimings($data['pageTimings']);
-        $this->setStartedDateTime($data['startedDateTime']);
-        $this->setTitle($data['title']);
-    }
-
-    public function getId()
-    {
-        return $this->_Id;
-    }
-
-    public function getPageTimings()
-    {
-        if (null === $this->_pageTimings) {
-            $this->_pageTimings = new PhpHttpArchive_Page_Timings();
+        if (!empty($data['domain'])) {
+            $this->setDomain($data['domain']);
         }
-        return $this->_pageTimings;
-    }
 
-    public function getStartedDateTime($format = null)
-    {
-        if (null === $format) {
-            $format = DateTime::ISO8601;
+        if (empty($data['name'])) {
+            throw new InvalidArgumentException('Cookie name is missing');
         }
-        return $this->_startedDateTime->format($format);
+        $this->setName($data['name']);
+
+        if (!empty($data['domain'])) {
+            $this->setPath($data['path']);
+        }
+
+        if (!empty($data['expires'])) {
+            $this->setPath($data['expires']);
+        }
+
+        if (!empty($data['httpOnly'])) {
+            $this->setHttpOnly($data['httpOnly']);
+        }
+
+        if (empty($data['value'])) {
+            throw new InvalidArgumentException('Cookie value is missing');
+        }
+        $this->setValue($data['value']);
     }
 
-    public function getTitle()
+    public function getDomain()
     {
-        return $this->_title;
+        return $this->_domain;
     }
 
-    public function setId($id)
+    public function getExpires($format = null)
     {
-        $this->_id = (string) $id;
+        if (null === $this->_expires) {
+            $value = null;
+        } else {
+            if (null === $format) {
+                $format = DateTime::ISO8601;
+            }
+            $value = $this->_expires->format($format);
+        }
+
+        return $value;
+    }
+
+    public function getHttpOnly()
+    {
+        return $this->_httpOnly;
+    }
+
+    public function getName()
+    {
+        return $this->_name;
+    }
+
+    public function getPath()
+    {
+        return $this->_path;
+    }
+
+    public function getValue()
+    {
+        return $this->_value;
+    }
+
+    public function setDomain($domain)
+    {
+        $this->_domain = (string) $domain;
         return $this;
     }
 
-    public function setPageTimings(PhpHttpArchive_Page_Timings $pageTimings)
-    {
-        $this->_pageTimings = $pageTimings;
-        return $this;
-    }
-
-    public function setStartedDateTime($startedDateTime)
+    public function setExpires($expires)
     {
         $dateTime = DateTime::createFromFormat(
             DateTime::ISO8601,
-            $startedDateTime
+            $expires
         );
         if (false === $dateTime) {
             throw new InvalidArgumentException(
-                "Provided \"startedDateTime\" ($startedDateTime) value is not a
+                "Provided \"expires\" ($expires) value is not a
                  valid ISO 8601 value"
             );
         }
 
-        $this->_startedDateTime = $dateTime;
+        $this->_expires = $dateTime;
         return $this;
     }
 
-    public function setTitle($title)
+    public function setHttpOnly($httpOnly)
     {
-        $this->_title = (string) $title;
+        $this->_httpOnly = (bool) $httpOnly;
+        return $this;
+    }
+
+    public function setName($name)
+    {
+        $this->_name = (string) $name;
+        return $this;
+    }
+
+    public function setPath($path)
+    {
+        $this->_path = (string) $path;
+        return $this;
+    }
+
+    public function setValue($value)
+    {
+        $this->_value = (string) $value;
         return $this;
     }
 }

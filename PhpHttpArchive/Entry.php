@@ -33,17 +33,31 @@
 
 class PhpHttpArchive_Entry extends PhpHttpArchive_Element_Abstract
 {
+    protected $_cache;
     protected $_pageRef;
     protected $_request;
+    protected $_response;
     protected $_startedDateTime;
     protected $_time;
+    protected $_timings;
 
     protected function _loadData(array $data)
     {
+        $this->setCache($data['cache']);
         $this->setPageRef($data['pageRef']);
         $this->setRequest($data['request']);
+        $this->setResponse($data['response']);
         $this->setStartedDateTime($data['startedDateTime']);
         $this->setTime($data['time']);
+        $this->setTimings($data['timings']);
+    }
+
+    public function getCache()
+    {
+        if (null === $this->_cache) {
+            $this->_cache = new PhpHttpArchive_Entry_Cache();
+        }
+        return $this->_response;
     }
 
     public function getPageRef()
@@ -59,6 +73,14 @@ class PhpHttpArchive_Entry extends PhpHttpArchive_Element_Abstract
         return $this->_request;
     }
 
+    public function getResponse()
+    {
+        if (null === $this->_response) {
+            $this->_response = new PhpHttpArchive_Entry_Response();
+        }
+        return $this->_response;
+    }
+
     public function getStartedDateTime($format = null)
     {
         if (null === $format) {
@@ -72,6 +94,20 @@ class PhpHttpArchive_Entry extends PhpHttpArchive_Element_Abstract
         return $this->_time;
     }
 
+    public function getTimings()
+    {
+        if (null === $this->_timings) {
+            $this->_timings = new PhpHttpArchive_Entry_Timings();
+        }
+        return $this->_timings;
+    }
+
+    public function setCache(PhpHttpArchive_Entry_Cache $cache)
+    {
+        $this->_cache = $cache;
+        return $this;
+    }
+
     public function setPageRef($pageRef)
     {
         $this->_pageRef = (string) $pageRef;
@@ -81,6 +117,12 @@ class PhpHttpArchive_Entry extends PhpHttpArchive_Element_Abstract
     public function setRequest(PhpHttpArchive_Entry_Request $request)
     {
         $this->_request = $request;
+        return $this;
+    }
+
+    public function setResponse(PhpHttpArchive_Entry_Response $response)
+    {
+        $this->_response = $response;
         return $this;
     }
 
@@ -104,6 +146,12 @@ class PhpHttpArchive_Entry extends PhpHttpArchive_Element_Abstract
     public function setTime($time)
     {
         $this->_time = (int) $time;
+        return $this;
+    }
+
+    public function setTimings(PhpHttpArchive_Entry_Timings $timings)
+    {
+        $this->_timings = $timings;
         return $this;
     }
 }

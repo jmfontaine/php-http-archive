@@ -31,79 +31,94 @@
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
-class PhpHttpArchive_Page extends PhpHttpArchive_Element_Abstract
+class PhpHttpArchive_Entry_Cache_State extends PhpHttpArchive_Element_Abstract
 {
-    protected $_id;
-    protected $_pageTimings;
-    protected $_startedDateTime;
-    protected $_title;
+    protected $_eTag;
+    protected $_expires;
+    protected $_hitCount;
+    protected $_lastAccess;
 
     protected function _loadData(array $data)
     {
-        $this->setId($data['id']);
-        $this->setPageTimings($data['pageTimings']);
-        $this->setStartedDateTime($data['startedDateTime']);
-        $this->setTitle($data['title']);
-    }
+        $this->setETag($data['eTag']);
 
-    public function getId()
-    {
-        return $this->_Id;
-    }
-
-    public function getPageTimings()
-    {
-        if (null === $this->_pageTimings) {
-            $this->_pageTimings = new PhpHttpArchive_Page_Timings();
+        if (!empty($data['expires'])) {
+            $this->setExpires($data['expires']);
         }
-        return $this->_pageTimings;
+
+        $this->setLastAccess($data['lastAccess']);
+        $this->setHitCount($data['hitCount']);
     }
 
-    public function getStartedDateTime($format = null)
+    public function getETag()
+    {
+        return $this->_eTag;
+    }
+
+    public function getExpires($format = null)
     {
         if (null === $format) {
             $format = DateTime::ISO8601;
         }
-        return $this->_startedDateTime->format($format);
+        return $this->_expires->format($format);
     }
 
-    public function getTitle()
+    public function getHitCount()
     {
-        return $this->_title;
+        return $this->_hitCount;
     }
 
-    public function setId($id)
+    public function getLastAccess($format = null)
     {
-        $this->_id = (string) $id;
+        if (null === $format) {
+            $format = DateTime::ISO8601;
+        }
+        return $this->_lastAccess->format($format);
+    }
+
+    public function setETag($eTag)
+    {
+        $this->_eTag = $eTag;
         return $this;
     }
 
-    public function setPageTimings(PhpHttpArchive_Page_Timings $pageTimings)
-    {
-        $this->_pageTimings = $pageTimings;
-        return $this;
-    }
-
-    public function setStartedDateTime($startedDateTime)
+    public function setExpires($expires)
     {
         $dateTime = DateTime::createFromFormat(
             DateTime::ISO8601,
-            $startedDateTime
+            $expires
         );
         if (false === $dateTime) {
             throw new InvalidArgumentException(
-                "Provided \"startedDateTime\" ($startedDateTime) value is not a
+                "Provided \"expires\" ($expires) value is not a
                  valid ISO 8601 value"
             );
         }
 
-        $this->_startedDateTime = $dateTime;
+        $this->_expires = $dateTime;
         return $this;
     }
 
-    public function setTitle($title)
+    public function setHitCount($hitCount)
     {
-        $this->_title = (string) $title;
+        $this->_hitCount = (int) $hitCount;
+        return $this;
+    }
+
+    public function setLastAccess($lastAccess)
+    {
+        $dateTime = DateTime::createFromFormat(
+            DateTime::ISO8601,
+            $lastAccess
+        );
+        if (false === $dateTime) {
+            throw new InvalidArgumentException(
+                "Provided \"lastAccess\" ($lastAccess) value is not a
+                 valid ISO 8601 value"
+            );
+        }
+
+        $this->_lastAccess = $dateTime;
         return $this;
     }
 }

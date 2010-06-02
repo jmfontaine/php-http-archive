@@ -31,48 +31,41 @@
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
-class PhpHttpArchive_Pages extends PhpHttpArchive_Element_Abstract
-    implements Iterator
+class PhpHttpArchive_Page_Timings extends PhpHttpArchive_Element_Abstract
 {
-    protected $_pages = array();
+    protected $_onContentLoad;
+    protected $_onLoad;
 
     protected function _loadData(array $data)
     {
-        foreach ($data as $page) {
-            $this->addPage(
-                new PhpHttpArchive_Page($page)
-            );
+        if (!empty($data['onContentLoad'])) {
+            $this->setExpires($data['onContentLoad']);
+        }
+
+        if (!empty($data['onLoad'])) {
+            $this->setExpires($data['onLoad']);
         }
     }
 
-    public function addPage(PhpHttpArchive_Page $page)
+    public function getOnContentLoad()
     {
-        $this->_pages[] = $page;
+        return $this->_onContentLoad;
+    }
+
+    public function getOnLoad()
+    {
+        return $this->_onLoad;
+    }
+
+    public function setOnContentLoad($onContentLoad)
+    {
+        $this->_onContentLoad = (int) $onContentLoad;
         return $this;
     }
 
-    public function current()
+    public function setOnLoad($onLoad)
     {
-        return $this->_pages[$this->_index];
-    }
-
-    public function key()
-    {
-        return $this->_index;
-    }
-
-    public function next()
-    {
-        $this->_index++;
-    }
-
-    public function rewind()
-    {
-        $this->_index = 0;
-    }
-
-    public function valid()
-    {
-        return isset($this->_pages[$this->_index]);
+        $this->_onLoad = (int) $onLoad;
+        return $this;
     }
 }

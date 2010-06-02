@@ -31,48 +31,64 @@
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
-class PhpHttpArchive_Pages extends PhpHttpArchive_Element_Abstract
-    implements Iterator
+class PhpHttpArchive_Entry_Request_PostData_Param
+    extends PhpHttpArchive_Element_Abstract
 {
-    protected $_pages = array();
+    protected $_contentType;
+    protected $_fileName;
+    protected $_name;
+    protected $_value;
 
     protected function _loadData(array $data)
     {
-        foreach ($data as $page) {
-            $this->addPage(
-                new PhpHttpArchive_Page($page)
-            );
+        $this->setName($data['name']);
+
+        if (!empty($data['value'])) {
+            $this->setValue($data['value']);
         }
     }
 
-    public function addPage(PhpHttpArchive_Page $page)
+    public function getContentType()
     {
-        $this->_pages[] = $page;
+        return $this->_contentType;
+    }
+
+    public function getFileName()
+    {
+        return $this->_fileName;
+    }
+
+    public function getName()
+    {
+        return $this->_name;
+    }
+
+    public function getValue()
+    {
+        return $this->_value;
+    }
+
+    public function setContentType($contentType)
+    {
+        $this->_contentType = (string) $contentType;
         return $this;
     }
 
-    public function current()
+    public function setFileName($fileName)
     {
-        return $this->_pages[$this->_index];
+        $this->_fileName = (string) $fileName;
+        return $this;
     }
 
-    public function key()
+    public function setName($name)
     {
-        return $this->_index;
+        $this->_name = (string) $name;
+        return $this;
     }
 
-    public function next()
+    public function setValue($value)
     {
-        $this->_index++;
-    }
-
-    public function rewind()
-    {
-        $this->_index = 0;
-    }
-
-    public function valid()
-    {
-        return isset($this->_pages[$this->_index]);
+        $this->_value = (string) $value;
+        return $this;
     }
 }

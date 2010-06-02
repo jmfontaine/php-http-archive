@@ -31,29 +31,30 @@
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
-class PhpHttpArchive_Pages extends PhpHttpArchive_Element_Abstract
+class PhpHttpArchive_Entry_Cookies extends PhpHttpArchive_Element_Abstract
     implements Iterator
 {
-    protected $_pages = array();
+    protected $_cookies = array();
+    protected $_index = 0;
 
     protected function _loadData(array $data)
     {
-        foreach ($data as $page) {
-            $this->addPage(
-                new PhpHttpArchive_Page($page)
+        foreach ($data as $entry) {
+            $this->addCookie(
+                new PhpHttpArchive_Entry_Cookie($entry)
             );
         }
     }
 
-    public function addPage(PhpHttpArchive_Page $page)
+    public function addookie(PhpHttpArchive_Entry_Cookie $cookie)
     {
-        $this->_pages[] = $page;
+        $this->_cookies[] = $cookie;
         return $this;
     }
 
     public function current()
     {
-        return $this->_pages[$this->_index];
+        return $this->_cookies[$this->_index];
     }
 
     public function key()
@@ -73,6 +74,6 @@ class PhpHttpArchive_Pages extends PhpHttpArchive_Element_Abstract
 
     public function valid()
     {
-        return isset($this->_pages[$this->_index]);
+        return isset($this->_cookies[$this->_index]);
     }
 }

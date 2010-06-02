@@ -31,48 +31,37 @@
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
-class PhpHttpArchive_Pages extends PhpHttpArchive_Element_Abstract
-    implements Iterator
+class PhpHttpArchive_Entry_Header
+    extends PhpHttpArchive_Element_Abstract
 {
-    protected $_pages = array();
+    protected $_name;
+    protected $_value;
 
     protected function _loadData(array $data)
     {
-        foreach ($data as $page) {
-            $this->addPage(
-                new PhpHttpArchive_Page($page)
-            );
-        }
+        $this->setName($data['name']);
+        $this->setValue($data['value']);
     }
 
-    public function addPage(PhpHttpArchive_Page $page)
+    public function getName()
     {
-        $this->_pages[] = $page;
+        return $this->_name;
+    }
+
+    public function getValue()
+    {
+        return $this->_value;
+    }
+
+    public function setName($name)
+    {
+        $this->_name = (string) $name;
         return $this;
     }
 
-    public function current()
+    public function setValue($value)
     {
-        return $this->_pages[$this->_index];
-    }
-
-    public function key()
-    {
-        return $this->_index;
-    }
-
-    public function next()
-    {
-        $this->_index++;
-    }
-
-    public function rewind()
-    {
-        $this->_index = 0;
-    }
-
-    public function valid()
-    {
-        return isset($this->_pages[$this->_index]);
+        $this->_value = (string) $value;
+        return $this;
     }
 }

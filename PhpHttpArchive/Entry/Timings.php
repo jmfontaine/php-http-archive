@@ -31,48 +31,61 @@
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
-class PhpHttpArchive_Pages extends PhpHttpArchive_Element_Abstract
-    implements Iterator
+class PhpHttpArchive_Entry_Timings extends PhpHttpArchive_Element_Abstract
 {
-    protected $_pages = array();
+    protected $_blocked;
+    protected $_connect;
+    protected $_dns;
+    protected $_receive;
+    protected $_send;
+    protected $_wait;
 
     protected function _loadData(array $data)
     {
-        foreach ($data as $page) {
-            $this->addPage(
-                new PhpHttpArchive_Page($page)
-            );
+        if (!empty($data['blocked'])) {
+            $this->setBlocked($data['blocked']);
         }
+
+        if (!empty($data['connect'])) {
+            $this->setConnect($data['connect']);
+        }
+
+        if (!empty($data['dns'])) {
+            $this->setDns($data['dns']);
+        }
+
+        $this->setReceive($data['receive']);
+        $this->setSend($data['send']);
+        $this->setWait($data['wait']);
     }
 
-    public function addPage(PhpHttpArchive_Page $page)
+    public function getBlocked()
     {
-        $this->_pages[] = $page;
-        return $this;
+        return $this->_blocked;
     }
 
-    public function current()
+    public function getConnect()
     {
-        return $this->_pages[$this->_index];
+        return $this->_connect;
     }
 
-    public function key()
+    public function getDns()
     {
-        return $this->_index;
+        return $this->_dns;
     }
 
-    public function next()
+    public function getReceive()
     {
-        $this->_index++;
+        return $this->_receive;
     }
 
-    public function rewind()
+    public function getSend()
     {
-        $this->_index = 0;
+        return $this->_send;
     }
 
-    public function valid()
+    public function getWait()
     {
-        return isset($this->_pages[$this->_index]);
+        return $this->_Wait;
     }
 }

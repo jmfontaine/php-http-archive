@@ -31,94 +31,63 @@
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
-class PhpHttpArchive_Entry_Request_Cookie
+class PhpHttpArchive_Entry_Response_Content
     extends PhpHttpArchive_Element_Abstract
 {
-    protected $_domain;
-    protected $_expires;
-    protected $_name;
-    protected $_path;
-    protected $_value;
+    protected $_compression;
+    protected $_mimeType;
+    protected $_size;
+    protected $_text;
 
     protected function _loadData(array $data)
     {
-        if (!empty($data['domain'])) {
-            $this->setDomain($data['domain']);
+        if (!empty($data['compression'])) {
+            $this->setCompression($data['compression']);
         }
 
-        if (empty($data['name'])) {
-            throw new InvalidArgumentException('Cookie name is missing');
+        $this->setMimeType($data['mimeType']);
+        $this->setSize($data['size']);
+
+        if (!empty($data['text'])) {
+            $this->setCompression($data['text']);
         }
-        $this->setName($data['name']);
-
-        if (!empty($data['domain'])) {
-            $this->setPath($data['path']);
-        }
-
-        if (!empty($data['expires'])) {
-            $this->setPath($data['expires']);
-        }
-
-        if (empty($data['value'])) {
-            throw new InvalidArgumentException('Cookie value is missing');
-        }
-        $this->setValue($data['value']);
     }
 
-    public function getDomain()
+    public function getCompression()
     {
-        return $this->_domain;
+        return $this->_compression;
     }
 
-    public function getExpires($format = null)
+    public function getMimeType()
     {
-        if (null === $this->_expires) {
-            $value = null;
-        } else {
-            if (null === $format) {
-                $format = DateTime::ISO8601;
-            }
-            $value = $this->_expires->format($format);
-        }
-
-        return $value;
+        return $this->_mimeType;
     }
 
-    public function getName()
+    public function getSize()
     {
-        return $this->_name;
+        return $this->_size;
     }
 
-    public function getPath()
+    public function getText()
     {
-        return $this->_path;
+        return $this->_text;
     }
 
-    public function getValue()
+    public function setCompression($compression)
     {
-        return $this->_value;
-    }
-
-    public function setDomain($domain)
-    {
-        $this->_domain = (string) $domain;
+        $this->_compression = (int) $compression;
         return $this;
     }
 
-    public function setName($name)
+    public function setMimeType($mimeType)
     {
-        $this->_name = (string) $name;
+        $this->_mimeType = $mimeType;
         return $this;
     }
 
-    public function setPath($path)
+    public function setText($text)
     {
-        $this->_path = (string) $path;
-        return $this;
-    }
-    public function setValue($value)
-    {
-        $this->_value = (string) $value;
+        $this->_text = (string) $text;
         return $this;
     }
 }

@@ -31,29 +31,33 @@
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
-class PhpHttpArchive_Entry_Request extends PhpHttpArchive_Element_Abstract
+class PhpHttpArchive_Entry_Response extends PhpHttpArchive_Element_Abstract
 {
+    protected $_bodySize = -1;
+    protected $_content;
     protected $_cookies;
     protected $_headers;
+    protected $_headersSize = -1;
     protected $_httpVersion;
-    protected $_method;
-    protected $_postData;
-    protected $_queryString;
-    protected $_url;
+    protected $_redirectUrl;
+    protected $_status;
+    protected $_statusText;
 
     protected function _loadData(array $data)
     {
+        $this->setBodySize($data['bodySize']);
         $this->setCookies($data['cookies']);
         $this->setHeaders($data['headers']);
+        $this->setHeadersSize($data['headersSize']);
         $this->setHttpVersion($data['httpVersion']);
-        $this->setMethod($data['method']);
+        $this->setRedirectUrl($data['redirectURL']);
+        $this->setStatus($data['status']);
+        $this->setStatusText($data['statusText']);
+    }
 
-        if (!empty($data['postData'])) {
-            $this->setPostData($data['postData']);
-        }
-
-        $this->setQueryString($data['queryString']);
-        $this->setUrl($data['url']);
+    public function getBodySize()
+    {
+        return $this->_bodySize;
     }
 
     public function getCookies()
@@ -64,6 +68,14 @@ class PhpHttpArchive_Entry_Request extends PhpHttpArchive_Element_Abstract
         return $this->_cookies;
     }
 
+    public function getContent()
+    {
+        if (null === $this->_content) {
+            $this->_content = new PhpHttpArchive_Entry_Response_Content();
+        }
+        return $this->_content;
+    }
+
     public function getHeaders()
     {
         if (null === $this->_headers) {
@@ -72,33 +84,40 @@ class PhpHttpArchive_Entry_Request extends PhpHttpArchive_Element_Abstract
         return $this->_headers;
     }
 
+    public function getHeadersSize()
+    {
+        return $this->_headersSize;
+    }
+
     public function getHttpVersion()
     {
         return $this->_httpVersion;
     }
 
-    public function getMethod()
+    public function getRedirectUrl()
     {
-        return $this->_method;
+        return $this->_redirectUrl;
     }
 
-    public function getQueryString()
+    public function getStatus()
     {
-        if (null === $this->_queryString) {
-            $queryString = new PhpHttpArchive_Entry_Request_QueryString();
-            $this->_queryString = $queryString;
-        }
-        return $this->_queryString;
+        return $this->_status;
     }
 
-    public function getUrl()
+    public function getStatusText()
     {
-        return $this->_url;
+        return $this->_statusText;
     }
 
     public function setCookies(PhpHttpArchive_Entry_Cookies $cookies)
     {
         $this->_cookies = $cookies;
+        return $this;
+    }
+
+    public function setContent(PhpHttpArchive_Entry_Response_Content $content)
+    {
+        $this->_content = $content;
         return $this;
     }
 
@@ -108,28 +127,33 @@ class PhpHttpArchive_Entry_Request extends PhpHttpArchive_Element_Abstract
         return $this;
     }
 
+    public function setHeadersSize($headersSize)
+    {
+        $this->_headersSize = (int) $headersSize;
+        return $this;
+    }
+
     public function setHttpVersion($version)
     {
         $this->_httpVersion = (string) $version;
         return $this;
     }
 
-    public function setMethod($method)
+    public function setRedirectUrl($redirectUrl)
     {
-        $this->_method = (string) $method;
+        $this->_redirectUrl = (string) $redirectUrl;
         return $this;
     }
 
-    public function setQueryString(PhpHttpArchive_Entry_Request_QueryString
-        $queryString)
+    public function setStatus($status)
     {
-        $this->_queryString = $queryString;
+        $this->_status = (string) $status;
         return $this;
     }
 
-    public function setUrl($url)
+    public function setStatusText($statusText)
     {
-        $this->_url = (string) $url;
+        $this->_statusText = (string) $statusText;
         return $this;
     }
 }

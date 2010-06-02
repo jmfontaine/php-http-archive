@@ -31,48 +31,24 @@
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
-class PhpHttpArchive_Pages extends PhpHttpArchive_Element_Abstract
-    implements Iterator
+class PhpHttpArchive_Entry_Request_PostData_Params
+    extends PhpHttpArchive_Element_Abstract
 {
-    protected $_pages = array();
+    protected $_params = array();
 
     protected function _loadData(array $data)
     {
-        foreach ($data as $page) {
-            $this->addPage(
-                new PhpHttpArchive_Page($page)
-            );
-        }
+        $this->setParams($data);
     }
 
-    public function addPage(PhpHttpArchive_Page $page)
+    public function getParams()
     {
-        $this->_pages[] = $page;
+        return $this->_params;
+    }
+
+    public function setParams(array $params)
+    {
+        $this->_params = $params;
         return $this;
-    }
-
-    public function current()
-    {
-        return $this->_pages[$this->_index];
-    }
-
-    public function key()
-    {
-        return $this->_index;
-    }
-
-    public function next()
-    {
-        $this->_index++;
-    }
-
-    public function rewind()
-    {
-        $this->_index = 0;
-    }
-
-    public function valid()
-    {
-        return isset($this->_pages[$this->_index]);
     }
 }
