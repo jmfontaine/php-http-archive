@@ -86,6 +86,6 @@ class PhpHttpArchive_Entry_Timings extends PhpHttpArchive_Element_Abstract
 
     public function getWait()
     {
-        return $this->_Wait;
+        return $this->_wait;
     }
 }

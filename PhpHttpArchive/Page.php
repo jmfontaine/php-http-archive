@@ -48,7 +48,7 @@ class PhpHttpArchive_Page extends PhpHttpArchive_Element_Abstract
 
     public function getId()
     {
-        return $this->_Id;
+        return $this->_id;
     }
 
     public function getPageTimings()
