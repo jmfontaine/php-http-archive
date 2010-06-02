@@ -88,4 +88,52 @@ class PhpHttpArchive_Entry_Timings extends PhpHttpArchive_Element_Abstract
     {
         return $this->_wait;
     }
+
+    public function setBlocked($blocked)
+    {
+        $this->_blocked = $blocked;
+        return $this;
+    }
+
+    public function setConnect($connect)
+    {
+        $this->_connect = $connect;
+        return $this;
+    }
+
+    public function setDns($dns)
+    {
+        $this->_dns = $dns;
+        return $this;
+    }
+
+    public function setReceive($receive)
+    {
+        $this->_receive = $receive;
+        return $this;
+    }
+
+    public function setSend($send)
+    {
+        $this->_send = $send;
+        return $this;
+    }
+
+    public function setWait($wait)
+    {
+        $this->_wait = $wait;
+        return $this;
+    }
+
+    public function toArray()
+    {
+        return array(
+            'blocked' => $this->getBlocked(),
+            'dns'     => $this->getDns(),
+            'connect' => $this->getConnect(),
+            'send'    => $this->getSend(),
+            'wait'    => $this->getWait(),
+            'receive' => $this->getReceive(),
+        );
+    }
 }

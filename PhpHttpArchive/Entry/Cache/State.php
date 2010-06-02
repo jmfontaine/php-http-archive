@@ -121,4 +121,14 @@ class PhpHttpArchive_Entry_Cache_State extends PhpHttpArchive_Element_Abstract
         $this->_lastAccess = $dateTime;
         return $this;
     }
+
+    public function toArray()
+    {
+        return array(
+            'expires'    => $this->getExpires(),
+            'lastAccess' => $this->getLastAccess(),
+            'eTag'       => $this->getETag(),
+            'hitCount'   => $this->getHitCount(),
+        );
+    }
 }

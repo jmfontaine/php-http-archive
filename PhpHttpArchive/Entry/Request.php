@@ -33,8 +33,10 @@
 
 class PhpHttpArchive_Entry_Request extends PhpHttpArchive_Element_Abstract
 {
+    protected $_bodySize = -1;
     protected $_cookies;
     protected $_headers;
+    protected $_headersSize = -1;
     protected $_httpVersion;
     protected $_method;
     protected $_postData;
@@ -56,10 +58,15 @@ class PhpHttpArchive_Entry_Request extends PhpHttpArchive_Element_Abstract
         $this->setUrl($data['url']);
     }
 
+    public function getBodySize()
+    {
+        return $this->_bodySize;
+    }
+
     public function getCookies()
     {
         if (null === $this->_cookies) {
-            $this->_cookie = new PhpHttpArchive_Entry_Cookies();
+            $this->_cookies = new PhpHttpArchive_Entry_Cookies();
         }
         return $this->_cookies;
     }
@@ -72,6 +79,11 @@ class PhpHttpArchive_Entry_Request extends PhpHttpArchive_Element_Abstract
         return $this->_headers;
     }
 
+    public function getHeadersSize()
+    {
+        return $this->_headersSize;
+    }
+
     public function getHttpVersion()
     {
         return $this->_httpVersion;
@@ -80,6 +92,14 @@ class PhpHttpArchive_Entry_Request extends PhpHttpArchive_Element_Abstract
     public function getMethod()
     {
         return $this->_method;
+    }
+
+    public function getPostData()
+    {
+        if (null === $this->_postData) {
+            $this->_postData = new PhpHttpArchive_Entry_Request_PostData();
+        }
+        return $this->_postData;
     }
 
     public function getQueryString()
@@ -96,6 +116,12 @@ class PhpHttpArchive_Entry_Request extends PhpHttpArchive_Element_Abstract
         return $this->_url;
     }
 
+    public function setBodySize($bodySize)
+    {
+        $this->_bodySize = (int) $bodySize;
+        return $this;
+    }
+
     public function setCookies(PhpHttpArchive_Entry_Cookies $cookies)
     {
         $this->_cookies = $cookies;
@@ -105,6 +131,12 @@ class PhpHttpArchive_Entry_Request extends PhpHttpArchive_Element_Abstract
     public function setHeaders(PhpHttpArchive_Entry_Headers $headers)
     {
         $this->_headers = $headers;
+        return $this;
+    }
+
+    public function setHeadersSize($headersSize)
+    {
+        $this->_headersSize = (int) $headersSize;
         return $this;
     }
 
@@ -120,6 +152,13 @@ class PhpHttpArchive_Entry_Request extends PhpHttpArchive_Element_Abstract
         return $this;
     }
 
+    public function setPostData(PhpHttpArchive_Entry_Request_PostData
+        $postData)
+    {
+        $this->_postData = $postData;
+        return $this;
+    }
+
     public function setQueryString(PhpHttpArchive_Entry_Request_QueryString
         $queryString)
     {
@@ -131,5 +170,20 @@ class PhpHttpArchive_Entry_Request extends PhpHttpArchive_Element_Abstract
     {
         $this->_url = (string) $url;
         return $this;
+    }
+
+    public function toArray()
+    {
+        return array(
+            'method'      => $this->getMethod(),
+            'url'         => $this->getUrl(),
+            'httpVersion' => $this->getHttpVersion(),
+            'cookies'     => $this->getCookies()->toArray(),
+            'headers'     => $this->getHeaders()->toArray(),
+            'queryString' => $this->getQueryString()->toArray(),
+            'postData'    => $this->getPostData()->toArray(),
+            'headersSize' => $this->getHeadersSize(),
+            'bodySize'    => $this->getBodySize(),
+        );
     }
 }

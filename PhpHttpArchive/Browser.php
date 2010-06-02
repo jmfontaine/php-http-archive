@@ -70,4 +70,12 @@ class PhpHttpArchive_Browser extends PhpHttpArchive_Element_Abstract
         $this->_version = (string) $version;
         return $this;
     }
+
+    public function toArray()
+    {
+        return array(
+            'name'    => $this->getName(),
+            'version' => $this->getVersion(),
+        );
+    }
 }

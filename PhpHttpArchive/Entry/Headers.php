@@ -72,6 +72,15 @@ class PhpHttpArchive_Entry_Headers extends PhpHttpArchive_Element_Abstract
         $this->_index = 0;
     }
 
+    public function toArray()
+    {
+        $data = array();
+        foreach ($this as $header) {
+            $data[] = $header->toArray();
+        }
+        return $data;
+    }
+
     public function valid()
     {
         return isset($this->_headers[$this->_index]);

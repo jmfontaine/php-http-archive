@@ -42,13 +42,10 @@ abstract class PhpHttpArchive_Element_Abstract
         }
     }
 
-    public function toArray()
-    {
-        return $this->_data;
-    }
+    abstract public function toArray();
 
     public function toJson()
     {
-        return json_encode($this->_data);
+        return json_encode($this->toArray());
     }
 }

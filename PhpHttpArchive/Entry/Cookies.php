@@ -46,7 +46,7 @@ class PhpHttpArchive_Entry_Cookies extends PhpHttpArchive_Element_Abstract
         }
     }
 
-    public function addookie(PhpHttpArchive_Entry_Cookie $cookie)
+    public function addCookie(PhpHttpArchive_Entry_Cookie $cookie)
     {
         $this->_cookies[] = $cookie;
         return $this;
@@ -70,6 +70,15 @@ class PhpHttpArchive_Entry_Cookies extends PhpHttpArchive_Element_Abstract
     public function rewind()
     {
         $this->_index = 0;
+    }
+
+    public function toArray()
+    {
+        $data = array();
+        foreach ($this as $cookie) {
+            $data[] = $cookie->toArray();
+        }
+        return $data;
     }
 
     public function valid()

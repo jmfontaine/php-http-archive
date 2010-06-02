@@ -154,4 +154,16 @@ class PhpHttpArchive_Entry_Cookie extends PhpHttpArchive_Element_Abstract
         $this->_value = (string) $value;
         return $this;
     }
+
+    public function toArray()
+    {
+        return array(
+            'name'     => $this->getName(),
+            'value'    => $this->getValue(),
+            'path'     => $this->getPath(),
+            'domain'   => $this->getDomain(),
+            'expires'  => $this->getExpires(),
+            'httpOnly' => $this->getHttpOnly(),
+        );
+    }
 }

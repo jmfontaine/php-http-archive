@@ -51,4 +51,13 @@ class PhpHttpArchive_Entry_Request_QueryString
         $this->_params = $params;
         return $this;
     }
+
+    public function toArray()
+    {
+        $data = array();
+        foreach ($this->getParams() as $param) {
+            $data[] = $param->toArray();
+        }
+        return $data;
+    }
 }

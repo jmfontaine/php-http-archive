@@ -73,7 +73,7 @@ class PhpHttpArchive_Entry_Request_PostData
     public function getParams()
     {
         if (null === $this->_params) {
-            $this->_params = new PhpHttpArchive_Entry_Request_Params();
+            $this->_params = new PhpHttpArchive_Entry_Request_PostData_Params();
         }
         return $this->_params;
     }
@@ -99,5 +99,14 @@ class PhpHttpArchive_Entry_Request_PostData
     {
         $this->_text = (string) $text;
         return $this;
+    }
+
+    public function toArray()
+    {
+        return array(
+            'mimeType' => $this->getMimeType(),
+            'params'   => $this->getParams()->toArray(),
+            'text'     => $this->getText(),
+        );
     }
 }

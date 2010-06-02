@@ -63,7 +63,7 @@ class PhpHttpArchive_Entry_Response extends PhpHttpArchive_Element_Abstract
     public function getCookies()
     {
         if (null === $this->_cookies) {
-            $this->_cookie = new PhpHttpArchive_Entry_Cookies();
+            $this->_cookies = new PhpHttpArchive_Entry_Cookies();
         }
         return $this->_cookies;
     }
@@ -155,5 +155,20 @@ class PhpHttpArchive_Entry_Response extends PhpHttpArchive_Element_Abstract
     {
         $this->_statusText = (string) $statusText;
         return $this;
+    }
+
+    public function toArray()
+    {
+        return array(
+            'status'      => $this->getStatus(),
+            'statusText'  => $this->getStatusText(),
+            'httpVersion' => $this->getHttpVersion(),
+            'cookies'     => $this->getCookies()->toArray(),
+            'headers'     => $this->getHeaders()->toArray(),
+            'content'     => $this->getContent()->toArray(),
+            'redirectUrl' => $this->getRedirectUrl(),
+            'headersSize' => $this->getHeadersSize(),
+            'bodySize'    => $this->getBodySize(),
+        );
     }
 }

@@ -68,4 +68,12 @@ class PhpHttpArchive_Page_Timings extends PhpHttpArchive_Element_Abstract
         $this->_onLoad = (int) $onLoad;
         return $this;
     }
+
+    public function toArray()
+    {
+        return array(
+            'onContentLoad' => $this->getOnContentLoad(),
+            'onLoad'        => $this->getOnLoad(),
+        );
+    }
 }

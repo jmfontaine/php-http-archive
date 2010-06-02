@@ -31,12 +31,45 @@
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
-class PhpHttpArchive
+/**
+ * Main class for manipulating HTTP Archive files.
+ */
+class PhpHttpArchive extends PhpHttpArchive_Element_Abstract
 {
+    /**
+     * Name and version info of used browser.
+     *
+     * @var PhpHttpArchive_Browser
+     */
     protected $_browser;
+
+    /**
+     * Name and version info of the log creator application.
+     *
+     * @var PhpHttpArchive_Creator
+     */
     protected $_creator;
+
+    /**
+     * List of all exported requests.
+     *
+     * @var PhpHttpArchive_Entries
+     */
     protected $_entries;
+
+    /**
+     * List of all exported pages. This field is missing if the application
+     * does not support grouping by pages.
+     *
+     * @var PhpHttpArchive_Pages
+     */
     protected $_pages;
+
+    /**
+     * Version number of the format. If empty, "1.1" is assumed.
+     *
+     * @var string
+     */
     protected $_version = '1.1';
 
     protected function _loadData(array $data)
@@ -142,6 +175,17 @@ class PhpHttpArchive
         return self::loadFromJson($data);
     }
 
+    public function saveToFile($path)
+    {
+        $result = @file_put_contents($path, $this->toJson());
+        if (false === $result) {
+            throw new Exception(
+                "HTTP archive is not writeable ($path)"
+            );
+        }
+        return true;
+    }
+
     public function setBrowser(PhpHttpArchive_Browser $browser)
     {
         $this->_browser = $browser;
@@ -175,5 +219,18 @@ class PhpHttpArchive
         }
         $this->_version = (string) $version;
         return $this;
+    }
+
+    public function toArray()
+    {
+        return array(
+            'log' => array(
+                'version' => $this->getVersion(),
+                'creator' => $this->getCreator()->toArray(),
+                'browser' => $this->getBrowser()->toArray(),
+                'pages'   => $this->getPages()->toArray(),
+                'entries' => $this->getEntries()->toArray(),
+            )
+        );
     }
 }

@@ -154,4 +154,17 @@ class PhpHttpArchive_Entry extends PhpHttpArchive_Element_Abstract
         $this->_timings = $timings;
         return $this;
     }
+
+    public function toArray()
+    {
+        return array(
+            'pageRef'         => $this->getPageRef(),
+            'startedDateTime' => $this->getStartedDateTime(),
+            'time'            => $this->getTime(),
+            'request'         => $this->getRequest()->toArray(),
+            'response'        => $this->getResponse()->toArray(),
+            'cache'           => $this->getCache()->toArray(),
+            'timings'         => $this->getTimings()->toArray(),
+        );
+    }
 }

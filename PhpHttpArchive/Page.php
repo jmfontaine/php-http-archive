@@ -106,4 +106,9 @@ class PhpHttpArchive_Page extends PhpHttpArchive_Element_Abstract
         $this->_title = (string) $title;
         return $this;
     }
+
+    public function toArray()
+    {
+        return array();
+    }
 }

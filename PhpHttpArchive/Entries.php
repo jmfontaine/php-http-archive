@@ -81,6 +81,15 @@ class PhpHttpArchive_Entries extends PhpHttpArchive_Element_Abstract
         $this->_index = 0;
     }
 
+    public function toArray()
+    {
+        $data = array();
+        foreach ($this as $entry) {
+            $data[] = $entry->toArray();
+        }
+        return $data;
+    }
+
     public function valid()
     {
         return isset($this->_entries[$this->_index]);

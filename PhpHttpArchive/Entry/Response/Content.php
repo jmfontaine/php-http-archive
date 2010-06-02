@@ -90,4 +90,14 @@ class PhpHttpArchive_Entry_Response_Content
         $this->_text = (string) $text;
         return $this;
     }
+
+    public function toArray()
+    {
+        return array(
+            'size'        => $this->getSize(),
+            'compression' => $this->getCompression(),
+            'mimeType'    => $this->getMimeType(),
+            'text'        => $this->getText(),
+        );
+    }
 }

@@ -69,4 +69,12 @@ class PhpHttpArchive_Entry_Cache extends PhpHttpArchive_Element_Abstract
         $this->_beforeRequest = $state;
         return $this;
     }
+
+    public function toArray()
+    {
+        return array(
+            'beforeRequest' => $this->getBeforeRequest()->toArray(),
+            'afterRequest'  => $this->getAfterRequest()->toArray(),
+        );
+    }
 }

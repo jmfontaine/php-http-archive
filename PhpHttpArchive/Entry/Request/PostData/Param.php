@@ -91,4 +91,14 @@ class PhpHttpArchive_Entry_Request_PostData_Param
         $this->_value = (string) $value;
         return $this;
     }
+
+    public function toArray()
+    {
+        return array(
+            'name'        => $this->getName(),
+            'value'       => $this->getValue(),
+            'fileName'    => $this->getFileName(),
+            'contentType' => $this->getContentType(),
+        );
+    }
 }

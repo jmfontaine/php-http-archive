@@ -71,6 +71,15 @@ class PhpHttpArchive_Pages extends PhpHttpArchive_Element_Abstract
         $this->_index = 0;
     }
 
+    public function toArray()
+    {
+        $data = array();
+        foreach ($this as $page) {
+            $data[] = $page->toArray();
+        }
+        return $data;
+    }
+
     public function valid()
     {
         return isset($this->_pages[$this->_index]);
