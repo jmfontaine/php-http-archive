@@ -218,7 +218,7 @@ class PhpHttpArchive
                 'Provided date could not be parsed as valid JSON'
             );
         }
-        return new self($data);
+        return self::loadFromArray($data);
     }
 
     public function loadFromFile($path)
