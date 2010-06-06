@@ -7,7 +7,7 @@
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
-         processIsolation="true"
+         processIsolation="false"
          stopOnFailure="false"
          syntaxCheck="true">
 
@@ -16,4 +16,13 @@
             <directory suffix="Test.php">./Tests</directory>
         </testsuite>
     </testsuites>
+    
+    <filter>
+        <whitelist>
+            <directory suffix=".php">.</directory>
+            <exclude>
+                <directory suffix=".php">./Tests</directory>
+            </exclude>
+        </whitelist>
+    </filter>    
 </phpunit>
