@@ -34,7 +34,7 @@
 class PhpHttpArchive_Creator extends PhpHttpArchive_Element_Abstract
 {
     protected $_name = 'PHP HTTP Archive';
-    protected $_version = '0.1';
+    protected $_version = PhpHttpArchive::VERSION;
 
     protected function _loadData(array $data)
     {

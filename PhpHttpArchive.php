@@ -34,8 +34,10 @@
 /**
  * Main class for manipulating HTTP Archive files.
  */
-class PhpHttpArchive extends PhpHttpArchive_Element_Abstract
+class PhpHttpArchive
 {
+    const VERSION = '0.1';
+
     /**
      * Name and version info of used browser.
      *
@@ -66,7 +68,7 @@ class PhpHttpArchive extends PhpHttpArchive_Element_Abstract
     protected $_pages;
 
     /**
-     * Version number of the format. If empty, "1.1" is assumed.
+     * Version number of the format. If not specified, "1.1" is assumed.
      *
      * @var string
      */
@@ -74,41 +76,96 @@ class PhpHttpArchive extends PhpHttpArchive_Element_Abstract
 
     protected function _loadData(array $data)
     {
+        if (!array_key_exists('log', $data)) {
+            throw new InvalidArgumentException(
+                'Invalid data: missing "log" element'
+            );
+        }
         $data = $data['log'];
 
-        if (!empty($data['version'])) {
+        if (array_key_exists('version', $data)) {
             $this->setVersion($data['version']);
         }
 
-        if (!empty($data['browser'])) {
+        if (array_key_exists('browser', $data)) {
             $this->_browser = new PhpHttpArchive_Browser($data['browser']);
         }
 
-        if (empty($data['creator'])) {
+        if (!array_key_exists('creator', $data)) {
             throw new InvalidArgumentException('Missing "creator" data');
         }
         $this->_creator = new PhpHttpArchive_Creator($data['creator']);
 
-        if (empty($data['entries'])) {
+        if (!array_key_exists('entries', $data)) {
             throw new InvalidArgumentException('Missing "entries" data');
         }
         $this->_entries = new PhpHttpArchive_Entries($data['entries']);
 
-        if (!empty($data['pages'])) {
+        if (array_key_exists('pages', $data)) {
             $this->_pages = new PhpHttpArchive_Pages($data['pages']);
         }
     }
 
-    public function __construct($data = null)
+    protected function __construct(array $data = null, $version = null)
     {
+        if (null !== $version) {
+            $this->setVersion($version);
+        }
+
         if (null !== $data) {
             $this->_loadData($data);
         }
     }
 
-    public static function create()
+    /**
+     * Formats JSON data.
+     *
+     * Borrowed from Zend Framework's Zend_JSON::prettyPrint() method and
+     * slightly edited.
+     *
+     * @see http://framework.zend.com/apidoc/1.10/Zend_Json/Zend_Json.html#prettyPrint
+     * @param string $json JSON data to format
+     */
+    protected function _formatJson($json)
     {
-        return new self();
+        $tokens = preg_split(
+            '|([\{\}\]\[,])|',
+            $json,
+            -1,
+            PREG_SPLIT_DELIM_CAPTURE
+        );
+        $result       = '';
+        $indentLevel  = 0;
+        $indentString = '    ';
+
+        foreach($tokens as $token) {
+            if ('' == $token) {
+                continue;
+            }
+
+            $prefix = str_repeat($indentString, $indentLevel);
+            if($token == '{' || $token == '[') {
+                $indentLevel++;
+                if($result != '' && $result[strlen($result)-1] == "\n") {
+                    $result .= $prefix;
+                }
+                $result .= "$token\n";
+            } else if($token == '}' || $token == ']') {
+                $indentLevel--;
+                $prefix = str_repeat($indentString, $indentLevel);
+                $result .= "\n$prefix$token";
+            } else if($token == ',') {
+                $result .= "$token\n";
+            } else {
+                $result .= $prefix . $token;
+            }
+        }
+        return $result;
+    }
+
+    public static function create($version = null)
+    {
+        return new self(null, $version);
     }
 
     public function getBrowser()
@@ -148,19 +205,19 @@ class PhpHttpArchive extends PhpHttpArchive_Element_Abstract
         return $this->_version;
     }
 
-    public static function loadFromJson($data)
+    public static function loadFromArray(array $data)
     {
-        $data = json_decode($data, true);
+        return new self($data);
+    }
+
+    public static function loadFromJson($json)
+    {
+        $data = json_decode($json, true);
         if (null === $data) {
             throw new InvalidArgumentException(
                 'Provided date could not be parsed as valid JSON'
             );
         }
-        return new self($data);
-    }
-
-    public static function loadFromArray(array $data)
-    {
         return new self($data);
     }
 
@@ -212,25 +269,53 @@ class PhpHttpArchive extends PhpHttpArchive_Element_Abstract
 
     public function setVersion($version)
     {
-        // We only support version 1.1 of the HTTP Archive specification for now
-        if ('1.1' != $version) {
+        // Check type
+        if (!is_string($version)) {
+            throw new InvalidArgumentException(
+                'Version number must be a string'
+            );
+        }
+
+        // Check format
+        if (!preg_match('/^(\d*)\.(\d*)$/', $version, $matches)) {
+            throw new InvalidArgumentException('Invalid version number');
+        }
+
+        // Check compatibility
+        if (1 != $matches[1] || 1 > $matches[2]) {
             throw new InvalidArgumentException("This library does not support
                 this version ($version) of the HTTP Archive specification");
         }
-        $this->_version = (string) $version;
+
+        $this->_version = $version;
         return $this;
+    }
+
+    public function toJson()
+    {
+        $json = json_encode($this->toArray());
+        return $this->_formatJson($json);
     }
 
     public function toArray()
     {
-        return array(
+        $result = array(
             'log' => array(
                 'version' => $this->getVersion(),
                 'creator' => $this->getCreator()->toArray(),
-                'browser' => $this->getBrowser()->toArray(),
-                'pages'   => $this->getPages()->toArray(),
                 'entries' => $this->getEntries()->toArray(),
             )
         );
+
+        $browserData = $this->getBrowser()->toArray();
+        if (!empty($browserData)) {
+            $result['browser'] = $browserData;
+        }
+        $pagesData = $this->getPages()->toArray();
+        if (!empty($pagesData)) {
+            $result['pages'] = $pagesData;
+        }
+
+        return $result;
     }
 }

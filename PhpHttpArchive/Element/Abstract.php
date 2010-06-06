@@ -33,10 +33,27 @@
 
 abstract class PhpHttpArchive_Element_Abstract
 {
+    protected $_archiveVersion = '1.1';
+
+    protected function _getArchiveVersion()
+    {
+        return $this->_archiveVersion;
+    }
+
     abstract protected function _loadData(array $data);
 
-    public function __construct($data = null)
+    protected function _setArchiveVersion($archiveVersion)
     {
+        $this->_archiveVersion = $archiveVersion;
+        return $this;
+    }
+
+    public function __construct(array $data = null, $archiveVersion = null)
+    {
+        if (null !== $archiveVersion) {
+            $this->_setArchiveVersion($archiveVersion);
+        }
+
         if (null !== $data) {
             $this->_loadData($data);
         }

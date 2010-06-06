@@ -73,9 +73,19 @@ class PhpHttpArchive_Browser extends PhpHttpArchive_Element_Abstract
 
     public function toArray()
     {
-        return array(
+        $result = array(
             'name'    => $this->getName(),
             'version' => $this->getVersion(),
         );
+
+        $emptyResult = true;
+        foreach ($result as $name => $value) {
+            if (!empty($value)) {
+                $emptyResult = false;
+                break;
+            }
+        }
+
+        return $emptyResult ? array() : $result;
     }
 }
