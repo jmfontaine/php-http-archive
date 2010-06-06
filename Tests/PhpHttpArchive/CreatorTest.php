@@ -25,22 +25,51 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * @package PHP HTTP Archive
+ * @package Tests
  * @author Jean-Marc Fontaine <jm@jmfontaine.net>
  * @copyright 2010 Jean-Marc Fontaine <jm@jmfontaine.net>
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
-class PhpHttpArchive_Creator extends PhpHttpArchive_Browser
+class PhpHttpArchive_CreatorTest extends PHPUnit_Framework_TestCase
 {
-    protected $_name = 'PHP HTTP Archive';
-    protected $_version = PhpHttpArchive::VERSION;
+    /*
+     * Methods
+     */
 
-    public function toArray()
+   /**
+     * @test
+     * @covers PhpHttpArchive_Creator::toArray
+     */
+    public function providesDataAsAnArray()
     {
-        return array(
-            'name'    => $this->getName(),
-            'version' => $this->getVersion(),
+        $creator = new PhpHttpArchive_Creator();
+        $creator->setName('Dummy creator');
+        $creator->setVersion('2.5');
+
+        $expectedData = array(
+            'name'    => 'Dummy creator',
+            'version' => '2.5',
         );
+        $this->assertSame($expectedData, $creator->toArray());
     }
+
+   /**
+     * @test
+     * @covers PhpHttpArchive_Creator::toArray
+     */
+    public function providesDefaultDataAsAnArray()
+    {
+        $creator = new PhpHttpArchive_Creator();
+
+        $expectedData = array(
+            'name'    => 'PHP HTTP Archive',
+            'version' => PhpHttpArchive::VERSION,
+        );
+        $this->assertSame($expectedData, $creator->toArray());
+    }
+
+    /*
+     * Bugs
+     */
 }
