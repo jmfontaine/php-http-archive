@@ -45,7 +45,7 @@ class PhpHttpArchiveTest extends PHPUnit_Framework_TestCase
     }
 
     /*
-     * Methods
+     * Archive creation
      */
 
     /**
@@ -69,14 +69,32 @@ class PhpHttpArchiveTest extends PHPUnit_Framework_TestCase
         $this->assertSame('1.2', $archive->getVersion());
     }
 
+    /*
+     * Browser
+     */
+
     /**
      * @test
      * @covers PhpHttpArchive::getBrowser
+     * @covers PhpHttpArchive::setBrowser
      */
-    public function retrievesTheBrowserObject()
+    public function handlesTheBrowserObject()
     {
-        $browser = PhpHttpArchive::create()->getBrowser();
-        $this->assertSame('PhpHttpArchive_Browser', get_class($browser));
+        $browser = new PhpHttpArchive_Browser();
+        $archive = PhpHttpArchive::create();
+        $archive->setBrowser($browser);
+        $this->assertSame($browser, $archive->getBrowser());
+    }
+
+    /**
+     * @test
+     * @covers PhpHttpArchive::setBrowser
+     * @expectedException PHPUnit_Framework_Error
+     */
+    public function settingTheBrowserObjectWithAnInvalidValidTriggersAnError()
+    {
+        $archive = PhpHttpArchive::create();
+        $archive->setBrowser(new StdClass());
     }
 
     /**
@@ -106,14 +124,32 @@ class PhpHttpArchiveTest extends PHPUnit_Framework_TestCase
         $this->assertSame($browser1, $browser2);
     }
 
+    /*
+     * Creator
+     */
+
     /**
      * @test
+     * @covers PhpHttpArchive::setCreator
      * @covers PhpHttpArchive::getCreator
      */
-    public function retrievesTheCreatorObject()
+    public function handlesTheCreatorObject()
     {
-        $creator = PhpHttpArchive::create()->getCreator();
-        $this->assertSame('PhpHttpArchive_Creator', get_class($creator));
+        $creator = new PhpHttpArchive_Creator();
+        $archive = PhpHttpArchive::create();
+        $archive->setCreator($creator);
+        $this->assertSame($creator, $archive->getCreator());
+    }
+
+    /**
+     * @test
+     * @covers PhpHttpArchive::setCreator
+     * @expectedException PHPUnit_Framework_Error
+     */
+    public function settingTheCreatorObjectWithAnInvalidValidTriggersAnError()
+    {
+        $archive = PhpHttpArchive::create();
+        $archive->setCreator(new StdClass());
     }
 
     /**
@@ -143,14 +179,32 @@ class PhpHttpArchiveTest extends PHPUnit_Framework_TestCase
         $this->assertSame($creator1, $creator2);
     }
 
+    /*
+     * Entries
+     */
+
     /**
      * @test
+     * @covers PhpHttpArchive::setEntries
      * @covers PhpHttpArchive::getEntries
      */
-    public function retrievesTheEntriesObject()
+    public function handlesTheEntriesObject()
     {
-        $entries = PhpHttpArchive::create()->getEntries();
-        $this->assertSame('PhpHttpArchive_Entries', get_class($entries));
+        $entries = new PhpHttpArchive_Entries();
+        $archive = PhpHttpArchive::create();
+        $archive->setEntries($entries);
+        $this->assertSame($entries, $archive->getEntries());
+    }
+
+    /**
+     * @test
+     * @covers PhpHttpArchive::setEntries
+     * @expectedException PHPUnit_Framework_Error
+     */
+    public function settingTheEntriesObjectWithAnInvalidValidTriggersAnError()
+    {
+        $archive = PhpHttpArchive::create();
+        $archive->setEntries(new StdClass());
     }
 
     /**
@@ -180,14 +234,32 @@ class PhpHttpArchiveTest extends PHPUnit_Framework_TestCase
         $this->assertSame($entries1, $entries2);
     }
 
+    /*
+     * Pages
+     */
+
     /**
      * @test
+     * @covers PhpHttpArchive::setPages
      * @covers PhpHttpArchive::getPages
      */
-    public function retrievesThePagesObject()
+    public function handlesThePagesObject()
     {
-        $pages = PhpHttpArchive::create()->getPages();
-        $this->assertSame('PhpHttpArchive_Pages', get_class($pages));
+        $pages   = new PhpHttpArchive_Pages();
+        $archive = PhpHttpArchive::create();
+        $archive->setPages($pages);
+        $this->assertSame($pages, $archive->getPages());
+    }
+
+    /**
+     * @test
+     * @covers PhpHttpArchive::setPages
+     * @expectedException PHPUnit_Framework_Error
+     */
+    public function settingThePagesObjectUsingAnInvalidValueTriggersAnError()
+    {
+        $archive = PhpHttpArchive::create();
+        $archive->setPages(new StdClass());
     }
 
     /**
@@ -217,277 +289,16 @@ class PhpHttpArchiveTest extends PHPUnit_Framework_TestCase
         $this->assertSame($pages1, $pages2);
     }
 
-    /**
-     * @test
-     * @covers PhpHttpArchive::getVersion
+    /*
+     * Version
      */
-    public function retrievesVersion()
-    {
-        $archive = PhpHttpArchive::create();
-        $archive->setVersion('1.1');
-        $this->assertSame('1.1', $archive->getVersion());
-    }
-
-    /**
-     * @test
-     * @covers PhpHttpArchive::loadFromArray
-     */
-    public function loadsDataFromAnArray()
-    {
-        $data    = require FILES_PATH . '/array_valid.php';
-        $archive = PhpHttpArchive::loadFromArray($data);
-        $this->assertSame('Unit tests', $archive->getCreator()->getName());
-    }
-
-    /**
-     * @test
-     * @covers PhpHttpArchive::loadFromArray
-     * @expectedException InvalidArgumentException
-     */
-    public function loadingInvalidDataFromAnArrayThrowsAnInvalidArgumentException()
-    {
-        $data    = require FILES_PATH . '/array_invalid.php';
-        $archive = PhpHttpArchive::loadFromArray($data);
-    }
-
-    /**
-     * @test
-     * @covers PhpHttpArchive::loadFromArray
-     * @expectedException InvalidArgumentException
-     */
-    public function loadingDataFromAnArrayMissingCreatorInfosThrowsAnInvalidArgumentException()
-    {
-        $data = require FILES_PATH . '/array_valid.php';
-        unset($data['log']['creator']);
-        $archive = PhpHttpArchive::loadFromArray($data);
-    }
-
-    /**
-     * @test
-     * @covers PhpHttpArchive::loadFromArray
-     * @expectedException InvalidArgumentException
-     */
-    public function loadingDataFromAnArrayMissingEntriesInfosThrowsAnInvalidArgumentException()
-    {
-        $data = require FILES_PATH . '/array_valid.php';
-        unset($data['log']['entries']);
-        $archive = PhpHttpArchive::loadFromArray($data);
-    }
-
-    /**
-     * @test
-     * @covers PhpHttpArchive::loadFromJson
-     */
-    public function loadsDataFromAJsonString()
-    {
-        $json    = file_get_contents(FILES_PATH . '/json_valid.js');
-        $archive = PhpHttpArchive::loadFromJson($json);
-        $this->assertSame('Unit tests', $archive->getCreator()->getName());
-    }
-
-    /**
-     * @test
-     * @covers PhpHttpArchive::loadFromJson
-     * @expectedException InvalidArgumentException
-     */
-    public function loadingDataFromABogusJsonStringThrowsAnInvalidArgumentException()
-    {
-        $json    = file_get_contents(FILES_PATH . '/json_bogus.js');
-        $archive = PhpHttpArchive::loadFromJson($json);
-    }
-
-    /**
-     * @test
-     * @covers PhpHttpArchive::loadFromJson
-     * @expectedException InvalidArgumentException
-     */
-    public function loadingInvalidDataFromAJsonStringThrowsAnInvalidArgumentException()
-    {
-        $json    = file_get_contents(FILES_PATH . '/json_invalid.js');
-        $archive = PhpHttpArchive::loadFromJson($json);
-    }
-
-    /**
-     * @test
-     * @covers PhpHttpArchive::loadFromFile
-     */
-    public function loadsDataFromAFile()
-    {
-        $path    = FILES_PATH . '/archive_valid.har';
-        $archive = PhpHttpArchive::loadFromFile($path);
-        $this->assertSame('Unit tests', $archive->getCreator()->getName());
-    }
-
-    /**
-     * @test
-     * @covers PhpHttpArchive::loadFromFile
-     * @expectedException InvalidArgumentException
-     */
-    public function loadingDataFromAnUnreadableFileThrowsAnInvalidArgumentException()
-    {
-        $path    = FILES_PATH . '/archive_missing.har';
-        $archive = PhpHttpArchive::loadFromFile($path);
-    }
-
-    /**
-     * @test
-     * @covers PhpHttpArchive::loadFromFile
-     * @expectedException InvalidArgumentException
-     */
-    public function loadingDataFromABogusFileThrowsAnInvalidArgumentException()
-    {
-        $path    = FILES_PATH . '/archive_bogus.har';
-        $archive = PhpHttpArchive::loadFromFile($path);
-    }
-
-    /**
-     * @test
-     * @covers PhpHttpArchive::loadFromFile
-     * @expectedException InvalidArgumentException
-     */
-    public function loadingInvalidDataFromAFileThrowsAnInvalidArgumentException()
-    {
-        $path    = FILES_PATH . '/archive_invalid.har';
-        $archive = PhpHttpArchive::loadFromFile($path);
-    }
-
-    /**
-     * @test
-     * @covers PhpHttpArchive::saveToFile
-     */
-    public function savesDataToAFile()
-    {
-        if (!$this->_initializeVfsStream()) {
-            $this->markTestSkipped('vfsStream not installed');
-        }
-
-        $sourcePath    = FILES_PATH . '/archive_valid.har';
-        $sourceArchive = PhpHttpArchive::loadFromFile($sourcePath);
-
-        vfsStreamWrapper::setRoot(new vfsStreamDirectory('tmp'));
-        $destinationPath = vfsStream::url('tmp') . '/archive.har';
-        $sourceArchive->saveToFile($destinationPath);
-
-        $sourceData      = file_get_contents($sourcePath);
-        $destinationData = file_get_contents($destinationPath);
-        $this->assertEquals($sourceData, $destinationData);
-    }
-
-    /**
-     * @test
-     * @covers PhpHttpArchive::loadFromFile
-     * @expectedException Exception
-     */
-    public function savingToAUnwriteableFileThrowsAnException()
-    {
-        if (!$this->_initializeVfsStream()) {
-            $this->markTestSkipped('vfsStream not installed');
-        }
-
-        $sourcePath = FILES_PATH . '/archive_valid.har';
-        $archive    = PhpHttpArchive::loadFromFile($sourcePath);
-
-        $destinationPath = vfsStream::url('missing/dir') . '/archive.har';
-        $archive->saveToFile($destinationPath);
-    }
-
-    /**
-     * @test
-     * @covers PhpHttpArchive::setBrowser
-     */
-    public function setsTheBrowserObject()
-    {
-        $browser = new PhpHttpArchive_Browser();
-        $archive = PhpHttpArchive::create();
-        $archive->setBrowser($browser);
-        $this->assertSame($browser, $archive->getBrowser());
-    }
-
-    /**
-     * @test
-     * @covers PhpHttpArchive::setBrowser
-     * @expectedException PHPUnit_Framework_Error
-     */
-    public function settingTheBrowserObjectWithAnInvalidValidTriggersAnError()
-    {
-        $archive = PhpHttpArchive::create();
-        $archive->setBrowser(new StdClass());
-    }
-
-    /**
-     * @test
-     * @covers PhpHttpArchive::setCreator
-     */
-    public function setsTheCreatorObject()
-    {
-        $creator = new PhpHttpArchive_Creator();
-        $archive = PhpHttpArchive::create();
-        $archive->setCreator($creator);
-        $this->assertSame($creator, $archive->getCreator());
-    }
-
-    /**
-     * @test
-     * @covers PhpHttpArchive::setCreator
-     * @expectedException PHPUnit_Framework_Error
-     */
-    public function settingTheCreatorObjectWithAnInvalidValidTriggersAnError()
-    {
-        $archive = PhpHttpArchive::create();
-        $archive->setCreator(new StdClass());
-    }
-
-    /**
-     * @test
-     * @covers PhpHttpArchive::setEntries
-     */
-    public function setsTheEntriesObject()
-    {
-        $entries = new PhpHttpArchive_Entries();
-        $archive = PhpHttpArchive::create();
-        $archive->setEntries($entries);
-        $this->assertSame($entries, $archive->getEntries());
-    }
-
-    /**
-     * @test
-     * @covers PhpHttpArchive::setEntries
-     * @expectedException PHPUnit_Framework_Error
-     */
-    public function settingTheEntriesObjectWithAnInvalidValidTriggersAnError()
-    {
-        $archive = PhpHttpArchive::create();
-        $archive->setEntries(new StdClass());
-    }
-
-    /**
-     * @test
-     * @covers PhpHttpArchive::setPages
-     */
-    public function setsThePagesObject()
-    {
-        $pages   = new PhpHttpArchive_Pages();
-        $archive = PhpHttpArchive::create();
-        $archive->setPages($pages);
-        $this->assertSame($pages, $archive->getPages());
-    }
-
-    /**
-     * @test
-     * @covers PhpHttpArchive::setPages
-     * @expectedException PHPUnit_Framework_Error
-     */
-    public function settingThePagesObjectUsingAnInvalidValueTriggersAnError()
-    {
-        $archive = PhpHttpArchive::create();
-        $archive->setPages(new StdClass());
-    }
 
     /**
      * @test
      * @covers PhpHttpArchive::setVersion
+     * @covers PhpHttpArchive::getVersion
      */
-    public function setsVersion()
+    public function handlesVersion()
     {
         $archive = PhpHttpArchive::create();
         $archive->setVersion('1.1');
@@ -549,8 +360,197 @@ class PhpHttpArchiveTest extends PHPUnit_Framework_TestCase
         $archive->setVersion('1.0');
     }
 
+    /*
+     * Loading data
+     */
+
     /**
      * @test
+     * @covers PhpHttpArchive::__construct
+     * @covers PhpHttpArchive::_loadData
+     * @covers PhpHttpArchive::loadFromArray
+     */
+    public function loadsDataFromAnArray()
+    {
+        $data    = require FILES_PATH . '/array_valid.php';
+        $archive = PhpHttpArchive::loadFromArray($data);
+        $this->assertSame('Unit tests', $archive->getCreator()->getName());
+    }
+
+    /**
+     * @test
+     * @covers PhpHttpArchive::__construct
+     * @covers PhpHttpArchive::_loadData
+     * @covers PhpHttpArchive::loadFromArray
+     * @expectedException InvalidArgumentException
+     */
+    public function loadingInvalidDataFromAnArrayThrowsAnInvalidArgumentException()
+    {
+        $data    = require FILES_PATH . '/array_invalid.php';
+        $archive = PhpHttpArchive::loadFromArray($data);
+    }
+
+    /**
+     * @test
+     * @covers PhpHttpArchive::__construct
+     * @covers PhpHttpArchive::_loadData
+     * @covers PhpHttpArchive::loadFromArray
+     * @expectedException InvalidArgumentException
+     */
+    public function loadingDataFromAnArrayMissingCreatorInfosThrowsAnInvalidArgumentException()
+    {
+        $data = require FILES_PATH . '/array_valid.php';
+        unset($data['log']['creator']);
+        $archive = PhpHttpArchive::loadFromArray($data);
+    }
+
+    /**
+     * @test
+     * @covers PhpHttpArchive::__construct
+     * @covers PhpHttpArchive::_loadData
+     * @covers PhpHttpArchive::loadFromArray
+     * @expectedException InvalidArgumentException
+     */
+    public function loadingDataFromAnArrayMissingEntriesInfosThrowsAnInvalidArgumentException()
+    {
+        $data = require FILES_PATH . '/array_valid.php';
+        unset($data['log']['entries']);
+        $archive = PhpHttpArchive::loadFromArray($data);
+    }
+
+    /**
+     * @test
+     * @covers PhpHttpArchive::__construct
+     * @covers PhpHttpArchive::_loadData
+     * @covers PhpHttpArchive::loadFromJson
+     */
+    public function loadsDataFromAJsonString()
+    {
+        $json    = file_get_contents(FILES_PATH . '/json_valid.js');
+        $archive = PhpHttpArchive::loadFromJson($json);
+        $this->assertSame('Unit tests', $archive->getCreator()->getName());
+    }
+
+    /**
+     * @test
+     * @covers PhpHttpArchive::__construct
+     * @covers PhpHttpArchive::loadFromJson
+     * @expectedException InvalidArgumentException
+     */
+    public function loadingDataFromABogusJsonStringThrowsAnInvalidArgumentException()
+    {
+        $json    = file_get_contents(FILES_PATH . '/json_bogus.js');
+        $archive = PhpHttpArchive::loadFromJson($json);
+    }
+
+    /**
+     * @test
+     * @covers PhpHttpArchive::__construct
+     * @covers PhpHttpArchive::_loadData
+     * @covers PhpHttpArchive::loadFromJson
+     * @expectedException InvalidArgumentException
+     */
+    public function loadingInvalidDataFromAJsonStringThrowsAnInvalidArgumentException()
+    {
+        $json    = file_get_contents(FILES_PATH . '/json_invalid.js');
+        $archive = PhpHttpArchive::loadFromJson($json);
+    }
+
+    /**
+     * @test
+     * @covers PhpHttpArchive::__construct
+     * @covers PhpHttpArchive::_loadData
+     * @covers PhpHttpArchive::loadFromFile
+     */
+    public function loadsDataFromAFile()
+    {
+        $path    = FILES_PATH . '/archive_valid.har';
+        $archive = PhpHttpArchive::loadFromFile($path);
+        $this->assertSame('Unit tests', $archive->getCreator()->getName());
+    }
+
+    /**
+     * @test
+     * @covers PhpHttpArchive::loadFromFile
+     * @expectedException InvalidArgumentException
+     */
+    public function loadingDataFromAnUnreadableFileThrowsAnInvalidArgumentException()
+    {
+        $path    = FILES_PATH . '/archive_missing.har';
+        $archive = PhpHttpArchive::loadFromFile($path);
+    }
+
+    /**
+     * @test
+     * @covers PhpHttpArchive::loadFromFile
+     * @expectedException InvalidArgumentException
+     */
+    public function loadingDataFromABogusFileThrowsAnInvalidArgumentException()
+    {
+        $path    = FILES_PATH . '/archive_bogus.har';
+        $archive = PhpHttpArchive::loadFromFile($path);
+    }
+
+    /**
+     * @test
+     * @covers PhpHttpArchive::__construct
+     * @covers PhpHttpArchive::_loadData
+     * @covers PhpHttpArchive::loadFromFile
+     * @expectedException InvalidArgumentException
+     */
+    public function loadingInvalidDataFromAFileThrowsAnInvalidArgumentException()
+    {
+        $path    = FILES_PATH . '/archive_invalid.har';
+        $archive = PhpHttpArchive::loadFromFile($path);
+    }
+
+    /*
+     * Saving data
+     */
+
+    /**
+     * @test
+     * @covers PhpHttpArchive::saveToFile
+     */
+    public function savesDataToAFile()
+    {
+        if (!$this->_initializeVfsStream()) {
+            $this->markTestSkipped('vfsStream not installed');
+        }
+
+        $sourcePath    = FILES_PATH . '/archive_valid.har';
+        $sourceArchive = PhpHttpArchive::loadFromFile($sourcePath);
+
+        vfsStreamWrapper::setRoot(new vfsStreamDirectory('tmp'));
+        $destinationPath = vfsStream::url('tmp') . '/archive.har';
+        $sourceArchive->saveToFile($destinationPath);
+
+        $sourceData      = file_get_contents($sourcePath);
+        $destinationData = file_get_contents($destinationPath);
+        $this->assertEquals($sourceData, $destinationData);
+    }
+
+    /**
+     * @test
+     * @covers PhpHttpArchive::loadFromFile
+     * @expectedException Exception
+     */
+    public function savingToAUnwriteableFileThrowsAnException()
+    {
+        if (!$this->_initializeVfsStream()) {
+            $this->markTestSkipped('vfsStream not installed');
+        }
+
+        $sourcePath = FILES_PATH . '/archive_valid.har';
+        $archive    = PhpHttpArchive::loadFromFile($sourcePath);
+
+        $destinationPath = vfsStream::url('missing/dir') . '/archive.har';
+        $archive->saveToFile($destinationPath);
+    }
+
+    /**
+     * @test
+     * @covers PhpHttpArchive::_formatJson
      * @covers PhpHttpArchive::toJson
      */
     public function savesDataToAJsonString()
