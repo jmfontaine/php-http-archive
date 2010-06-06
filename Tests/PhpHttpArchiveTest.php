@@ -35,7 +35,7 @@ class PhpHttpArchiveTest extends PHPUnit_Framework_TestCase
 {
     protected function _initializeVfsStream()
     {
-        @require_once 'vfsStream/vfsStream.php';
+        @include_once 'vfsStream/vfsStream.php';
         if (!class_exists('vfsStream', false)) {
             return false;
         }
