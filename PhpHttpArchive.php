@@ -163,6 +163,13 @@ class PhpHttpArchive
         return $result;
     }
 
+    public static function autoload($class)
+    {
+        $fileName = str_replace('_', '/', $class) . '.php';
+        @include $fileName;
+        return class_exists($class, false);
+    }
+
     public static function create($version = null)
     {
         return new self(null, $version);
@@ -230,6 +237,11 @@ class PhpHttpArchive
             );
         }
         return self::loadFromJson($data);
+    }
+
+    public static function registerAutoloader()
+    {
+        spl_autoload_register('PhpHttpArchive::autoload');
     }
 
     public function saveToFile($path)

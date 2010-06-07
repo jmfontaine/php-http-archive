@@ -45,6 +45,52 @@ class PhpHttpArchiveTest extends PHPUnit_Framework_TestCase
     }
 
     /*
+     * Autoloader
+     */
+
+    /**
+     * @test
+     * @runTestInSeparateProcess true
+     * @covers PhpHttpArchive::registerAutoloader
+     */
+    public function registersAutoloader()
+    {
+        // Unregister existing autoloaders to avoid biased tests
+        $autoloaders = spl_autoload_functions();
+        foreach ($autoloaders as $autoloader) {
+            spl_autoload_unregister($autoloader);
+        }
+
+        require_once 'PhpHttpArchive.php';
+        PhpHttpArchive::registerAutoloader();
+        $this->assertSame(
+            array(
+                array('PhpHttpArchive', 'autoload'),
+            ),
+            spl_autoload_functions()
+        );
+    }
+
+    /**
+     * @test
+     * @covers PhpHttpArchive::autoload
+     */
+    public function autoloaderCanLoadAClass()
+    {
+        // Unregister existing autoloaders to avoid biased tests
+        $autoloaders = spl_autoload_functions();
+        foreach ($autoloaders as $autoloader) {
+            spl_autoload_unregister($autoloader);
+        }
+
+        require_once 'PhpHttpArchive.php';
+        PhpHttpArchive::registerAutoloader();
+
+        $browser = new PhpHttpArchive_Browser();
+        $this->assertTrue('PhpHttpArchive_Browser', get_class($browser));
+    }
+
+    /*
      * Archive creation
      */
 
