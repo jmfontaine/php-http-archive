@@ -87,7 +87,7 @@ class PhpHttpArchiveTest extends PHPUnit_Framework_TestCase
         PhpHttpArchive::registerAutoloader();
 
         $browser = new PhpHttpArchive_Browser();
-        $this->assertTrue('PhpHttpArchive_Browser', get_class($browser));
+        $this->assertSame('PhpHttpArchive_Browser', get_class($browser));
     }
 
     /*
